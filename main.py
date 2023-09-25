@@ -81,7 +81,7 @@ class SyncApp(MDApp):
             for file_name in file_names:
                 md_file = os.path.join(dir_path, file_name)
                 # Ignore .canvas files and files modified before the last sync
-                if not file_name.endswith('.canvas') and os.path.getmtime(md_file) > last_sync_time:
+                if not (file_name.endswith('.canvas') or file_name.endswith('.ini')) and os.path.getmtime(md_file) > last_sync_time:
                     # For each .md file, convert it to .docx
                     if file_name.endswith('.md'):
                         docx_file = file_name.replace('.md', '.docx')
@@ -91,13 +91,17 @@ class SyncApp(MDApp):
                             os.makedirs(new_dir_path)
                         # Convert md to docx using pandoc
                         print('Converting to ' + os.path.join(new_dir_path, docx_file))
-                        output = pypandoc.convert_file(md_file, 'docx', outputfile=os.path.join(new_dir_path, docx_file), extra_args=['--reference-doc', 'template-modern.docx'])
+                        output = pypandoc.convert_file(md_file, 'docx', outputfile=os.path.join(new_dir_path, docx_file), extra_args=['--reference-doc', 'template-modern.docx', '-f', 'markdown-auto_identifiers'])
                         assert output == ""
                 else:
                     print_string = os.path.join(dir_path, file_name)
                     index = print_string.find(target_subdirectory)
                     if index != -1:
                         print(print_string[index:])
+                    elif file_name.endswith('.canvas'):
+                        print('Canvas: ' + file_name)
+                    elif os.path.getmtime(md_file) <= last_sync_time:
+                        print('File not modified before last sync: ' + file_name)
                     else:
                         print("Couldn't find target subdirectory in path")
         with open('last_sync_time.pkl', 'wb') as f:
