@@ -91,7 +91,7 @@ class SyncApp(MDApp):
                             os.makedirs(new_dir_path)
                         # Convert md to docx using pandoc
                         print('Converting to ' + os.path.join(new_dir_path, docx_file))
-                        output = pypandoc.convert_file(md_file, 'docx', outputfile=os.path.join(new_dir_path, docx_file), extra_args=['--reference-doc', 'template-modern.docx', '-f', 'markdown-auto_identifiers'])
+                        output = pypandoc.convert_file(md_file, 'docx', outputfile=os.path.join(new_dir_path, docx_file), extra_args=['-f', 'markdown-auto_identifiers', '--reference-doc', 'template-modern.docx',])
                         assert output == ""
                 else:
                     print_string = os.path.join(dir_path, file_name)
